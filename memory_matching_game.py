@@ -79,6 +79,72 @@ def main():
     revealed = generateRevealedCards(False)
     startGameAnimation(board)
 
+    # Variable for running the game
+    playing = True
+
+    # Let the user interact with the game
+    while playing:
+        mouse_click = False
+        drawBoard(board, revealed)
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                playing = False
+            elif event.type == MOUSEMOTION:
+                mouse_x, mouse_y = event.pos
+            elif event.type == MOUSEBUTTONUP:
+                mouse_x, mouse_y = event.pos
+                mouse_click = True
+
+        # Convert the mouse coordinates into usable card coordinates
+        card_x, card_y = getPosition(mouse_x, mouse_y)
+
+        # If the mouse is over a card
+        if card_x is not None and card_y is not None:
+            # If the card is not already revealed
+            if not revealed[card_x][card_y]:
+                # If mouse is clicked, reveal the card and check for match
+                if mouse_click:
+                    showCardAnimation(board, [(card_x, card_y)])
+                    revealed[card_x][card_y] = True
+                    if first_selection is None:
+                        first_selection = (card_x, card_y)
+                        mouse_click = False
+                    else:
+                        pygame.time.wait(1000)
+                        # If the cards match, leave them uncovered
+                        if board[card_x][card_y] is board[first_selection[0]][first_selection[1]]:
+                            revealed[card_x][card_y] = True
+                            revealed[first_selection[0]][first_selection[1]] = True
+                            first_selection = None
+                            mouse_click = False
+                        # If cards do not match, recover them
+                        elif board[card_x][card_y] is not board[first_selection[0]][first_selection[1]]:
+                            revealed[card_x][card_y] = False
+                            revealed[first_selection[0]][first_selection[1]] = False
+                            first_selection = None
+                            mouse_click = False
+                    # If all the cards are uncovered, the player has won
+                    if gameWon(revealed):
+                        gameWonAnimation(board, revealed)
+                        pygame.time.wait(1000)
+
+                        # Reset the gameboard
+                        board = generateRandomizedBoard()
+                        revealed =generateRevealedCards(False)
+                        drawBoard(board, revealed)
+                        pygame.display.update()
+                        startGameAnimation(board)
+                        first_selection = None
+
+                # If mouse is just hovering, highlight the card
+                else:
+                    x, y = getCoordinates(card_x, card_y)
+                    pygame.draw.rect(DISPLAY, HIGHLIGHT_COLOR, (x - 5, y - 5, CARD_SIZE + 10, CARD_SIZE + 10), 3)
+
+        # Update the screen and wait
+        pygame.display.update()
+        CLOCK.tick(FPS)
 
 # Function to set up the cards randomly on the game Board
 def generateRandomizedBoard():
@@ -171,6 +237,21 @@ def hideCardAnimation(board, cards_hide):
             pygame.display.update()
             CLOCK.tick(FPS)
 
+# Convert mouse coordinates into card coordinates
+def getPosition(x, y):
+    if x < X_MARGIN or y < Y_MARGIN:
+        return None, None
+    else:
+        card_x = (y - Y_MARGIN) // (CARD_SIZE + GAP_SIZE)
+        card_y = (x - X_MARGIN) // (CARD_SIZE + GAP_SIZE)
+
+        if card_x >= BOARD_HEIGHT or card_y >= BOARD_WIDTH:
+            return None, None
+        elif (card_x - X_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE or (card_y - Y_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE:
+            return None, None
+        else:
+            return card_x, card_y
+
 # Get the position of the card (upper left corner)
 def getCoordinates(x, y):
     card_x = X_MARGIN + y * (CARD_SIZE + GAP_SIZE)
@@ -199,6 +280,24 @@ def drawCard(shape, color, card_x, card_y):
     elif shape == SQUARE:
         pygame.draw.rect(DISPLAY, color, (x + quarter, y + quarter, CARD_SIZE - half, CARD_SIZE - half))
 
+# Check if the user has won the game
+def gameWon(revealed):
+    for i in revealed:
+        if False in i:
+            return False
+    return True
+
+# Flash colors of the screen when the user wins the game
+def gameWonAnimation(board, revealed):
+    color1 = BG_COLOR
+    color2 = DARK_BG_COLOR
+
+    for i in range(16):
+        color1, color2 = color2, color1
+        DISPLAY.fill(color1)
+        drawBoard(board, revealed)
+        pygame.display.update()
+        pygame.time.wait(300)
 
 if __name__ == '__main__':
     main()
