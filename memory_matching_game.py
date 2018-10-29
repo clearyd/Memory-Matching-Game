@@ -52,6 +52,7 @@ SQUARE = 'square'
 
 SHAPES = (CIRCLE, TRIANGLE, SQUARE)
 
+
 # Main function
 def main():
     # Initliaze pygame
@@ -113,15 +114,19 @@ def main():
                     else:
                         pygame.time.wait(1000)
                         # If the cards match, leave them uncovered
-                        if board[card_x][card_y] is board[first_selection[0]][first_selection[1]]:
+                        if board[card_x][card_y] is \
+                            board[first_selection[0]][first_selection[1]]:
                             revealed[card_x][card_y] = True
-                            revealed[first_selection[0]][first_selection[1]] = True
+                            revealed[first_selection[0]][first_selection[1]] = \
+                            True
                             first_selection = None
                             mouse_click = False
                         # If cards do not match, recover them
-                        elif board[card_x][card_y] is not board[first_selection[0]][first_selection[1]]:
+                        elif board[card_x][card_y] is not \
+                            board[first_selection[0]][first_selection[1]]:
                             revealed[card_x][card_y] = False
-                            revealed[first_selection[0]][first_selection[1]] = False
+                            revealed[first_selection[0]][first_selection[1]] = \
+                            False
                             first_selection = None
                             mouse_click = False
                     # If all the cards are uncovered, the player has won
@@ -140,11 +145,13 @@ def main():
                 # If mouse is just hovering, highlight the card
                 else:
                     x, y = getCoordinates(card_x, card_y)
-                    pygame.draw.rect(DISPLAY, HIGHLIGHT_COLOR, (x - 5, y - 5, CARD_SIZE + 10, CARD_SIZE + 10), 3)
+                    pygame.draw.rect(DISPLAY, HIGHLIGHT_COLOR,
+                        (x - 5, y - 5, CARD_SIZE + 10, CARD_SIZE + 10), 3)
 
         # Update the screen and wait
         pygame.display.update()
         CLOCK.tick(FPS)
+
 
 # Function to set up the cards randomly on the game Board
 def generateRandomizedBoard():
@@ -169,12 +176,14 @@ def generateRandomizedBoard():
         board.append(row)
     return board
 
+
 # Store data when a new box is revealed
 def generateRevealedCards(value):
     revealed = []
     for i in range(BOARD_HEIGHT):
         revealed.append([value] * BOARD_WIDTH)
     return revealed
+
 
 # Flashes the cards at the beginning of the game
 def startGameAnimation(board):
@@ -188,6 +197,7 @@ def startGameAnimation(board):
             cards.append((x,y))
     random.shuffle(cards)
 
+    # Put the cards into a group
     groups = []
     for i in range(0, len(cards), 30):
         groups.append(cards[i:i + 30])
@@ -199,20 +209,27 @@ def startGameAnimation(board):
         showCardAnimation(board, j)
         hideCardAnimation(board, j)
 
+
 # Draw all of the cards in proper state
 def drawBoard(board, revealed):
+    # Get the coordinates of each card
     for card_x in range(BOARD_HEIGHT):
         for card_y in range(BOARD_WIDTH):
             x, y = getCoordinates(card_x, card_y)
+            # If the card is not revealed, draw the back of the card
             if not revealed[card_x][card_y]:
-                pygame.draw.rect(DISPLAY, CARD_COLOR, (x,y, CARD_SIZE, CARD_SIZE))
+                pygame.draw.rect(DISPLAY, CARD_COLOR,
+                    (x,y, CARD_SIZE, CARD_SIZE))
+            # If the card is revealed, draw its picture
             else:
                 shape = board[card_x][card_y][0]
                 color = board[card_x][card_y][1]
                 drawCard(shape, color, card_x, card_y)
 
-# Reveal the boxes
+
+# Reveal the cards
 def showCardAnimation(board, cards_show):
+    # Show the cards at specified speed
     for cover in range(CARD_SIZE, -SPEED * 4, -SPEED * 4):
         for card in cards_show:
             x, y = getCoordinates(card[0], card[1])
@@ -224,8 +241,10 @@ def showCardAnimation(board, cards_show):
             pygame.display.update()
             CLOCK.tick(FPS)
 
+
 # Cover the cards that do not match
 def hideCardAnimation(board, cards_hide):
+    # Recover the cards at the specified speed
     for cover in range(0, CARD_SIZE + SPEED, 4 * SPEED):
         for card in cards_hide:
             x, y = getCoordinates(card[0], card[1])
@@ -237,20 +256,24 @@ def hideCardAnimation(board, cards_hide):
             pygame.display.update()
             CLOCK.tick(FPS)
 
+
 # Convert mouse coordinates into card coordinates
 def getPosition(x, y):
+    # If the mouse is outside the margins don't return anything
     if x < X_MARGIN or y < Y_MARGIN:
         return None, None
     else:
         card_x = (y - Y_MARGIN) // (CARD_SIZE + GAP_SIZE)
         card_y = (x - X_MARGIN) // (CARD_SIZE + GAP_SIZE)
-
+        # If the mouse is not on a card don't return anything
         if card_x >= BOARD_HEIGHT or card_y >= BOARD_WIDTH:
             return None, None
-        elif (card_x - X_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE or (card_y - Y_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE:
+        elif (card_x - X_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE or \
+            (card_y - Y_MARGIN) % (CARD_SIZE + GAP_SIZE) > CARD_SIZE:
             return None, None
         else:
             return card_x, card_y
+
 
 # Get the position of the card (upper left corner)
 def getCoordinates(x, y):
@@ -258,9 +281,11 @@ def getCoordinates(x, y):
     card_y = Y_MARGIN + x * (CARD_SIZE + GAP_SIZE)
     return card_x, card_y
 
+
 # Get the card's shape and color
 def getCard(board, card_x, card_y):
     return board[card_x][card_y][0], board[card_x][card_y][1]
+
 
 # Draw the shape on the card
 def drawCard(shape, color, card_x, card_y):
@@ -275,10 +300,13 @@ def drawCard(shape, color, card_x, card_y):
     if shape == CIRCLE:
         pygame.draw.circle(DISPLAY, color, (x + half, y + half), half - 10)
     elif shape == TRIANGLE:
-        pygame.draw.polygon(DISPLAY, color, ((x + half, y + quarter), (x + quarter, y + CARD_SIZE - quarter),
+        pygame.draw.polygon(DISPLAY, color, ((x + half, y + quarter),
+        (x + quarter, y + CARD_SIZE - quarter),
         (x + CARD_SIZE - quarter, y + CARD_SIZE - quarter)))
     elif shape == SQUARE:
-        pygame.draw.rect(DISPLAY, color, (x + quarter, y + quarter, CARD_SIZE - half, CARD_SIZE - half))
+        pygame.draw.rect(DISPLAY, color, (x + quarter, y + quarter,
+        CARD_SIZE - half, CARD_SIZE - half))
+
 
 # Check if the user has won the game
 def gameWon(revealed):
@@ -287,17 +315,19 @@ def gameWon(revealed):
             return False
     return True
 
+
 # Flash colors of the screen when the user wins the game
 def gameWonAnimation(board, revealed):
     color1 = BG_COLOR
     color2 = DARK_BG_COLOR
-
+    # Switch the color of the background 16 times quickly
     for i in range(16):
         color1, color2 = color2, color1
         DISPLAY.fill(color1)
         drawBoard(board, revealed)
         pygame.display.update()
         pygame.time.wait(300)
+
 
 if __name__ == '__main__':
     main()
