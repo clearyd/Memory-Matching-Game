@@ -85,7 +85,9 @@ def main():
 
     # Let the user interact with the game
     while playing:
+        # Update display and mouse
         mouse_click = False
+        DISPLAY.fill(BG_COLOR)
         drawBoard(board, revealed)
 
         for event in pygame.event.get():
@@ -110,7 +112,6 @@ def main():
                     revealed[card_x][card_y] = True
                     if first_selection is None:
                         first_selection = (card_x, card_y)
-                        mouse_click = False
                     else:
                         pygame.time.wait(1000)
                         # If the cards match, leave them uncovered
@@ -120,7 +121,6 @@ def main():
                             revealed[first_selection[0]][first_selection[1]] = \
                             True
                             first_selection = None
-                            mouse_click = False
                         # If cards do not match, recover them
                         elif board[card_x][card_y] is not \
                             board[first_selection[0]][first_selection[1]]:
@@ -128,7 +128,6 @@ def main():
                             revealed[first_selection[0]][first_selection[1]] = \
                             False
                             first_selection = None
-                            mouse_click = False
                     # If all the cards are uncovered, the player has won
                     if gameWon(revealed):
                         gameWonAnimation(board, revealed)
@@ -149,6 +148,7 @@ def main():
                         (x - 5, y - 5, CARD_SIZE + 10, CARD_SIZE + 10), 3)
 
         # Update the screen and wait
+        mouse_click = False
         pygame.display.update()
         CLOCK.tick(FPS)
 
