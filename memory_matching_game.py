@@ -153,7 +153,9 @@ def main():
         CLOCK.tick(FPS)
 
 
-# Function to set up the cards randomly on the game Board
+# Function to set up the cards randomly on the game board
+# Parameters: None
+# Returns: board that is made
 def generateRandomizedBoard():
     # Make a list of possible pictures on cards
     pics = []
@@ -178,6 +180,8 @@ def generateRandomizedBoard():
 
 
 # Store data when a new box is revealed
+# Parameters: T/F for if a card is revealed (value)
+# Returns: A list of the revealed cards
 def generateRevealedCards(value):
     revealed = []
     for i in range(BOARD_HEIGHT):
@@ -186,6 +190,8 @@ def generateRevealedCards(value):
 
 
 # Flashes the cards at the beginning of the game
+# Parameters: The game board
+# Returns: Nothing
 def startGameAnimation(board):
     # Get the cards
     revealed = generateRevealedCards(False)
@@ -211,6 +217,8 @@ def startGameAnimation(board):
 
 
 # Draw all of the cards in proper state
+# Parameters: The game board and a list of revealed cards
+# Returns: Nothing
 def drawBoard(board, revealed):
     # Get the coordinates of each card
     for card_x in range(BOARD_HEIGHT):
@@ -228,6 +236,8 @@ def drawBoard(board, revealed):
 
 
 # Reveal the cards
+# Parameters: The game board and the card to show
+# Returns: Nothing
 def showCardAnimation(board, cards_show):
     # Show the cards at specified speed
     for cover in range(CARD_SIZE, -SPEED * 4, -SPEED * 4):
@@ -243,6 +253,8 @@ def showCardAnimation(board, cards_show):
 
 
 # Cover the cards that do not match
+# Parameters: The game board and the card to cover
+# Returns: Nothing
 def hideCardAnimation(board, cards_hide):
     # Recover the cards at the specified speed
     for cover in range(0, CARD_SIZE + SPEED, 4 * SPEED):
@@ -258,6 +270,8 @@ def hideCardAnimation(board, cards_hide):
 
 
 # Convert mouse coordinates into card coordinates
+# Parameters: The coordinates of the mouse
+# Returns: The coordinates of the card clicked on
 def getPosition(x, y):
     # If the mouse is outside the margins don't return anything
     if x < X_MARGIN or y < Y_MARGIN:
@@ -276,6 +290,8 @@ def getPosition(x, y):
 
 
 # Get the position of the card (upper left corner)
+# Parameters: The coordinates of the card
+# Returns: The upper left corner coordinates of the card
 def getCoordinates(x, y):
     card_x = X_MARGIN + y * (CARD_SIZE + GAP_SIZE)
     card_y = Y_MARGIN + x * (CARD_SIZE + GAP_SIZE)
@@ -283,11 +299,15 @@ def getCoordinates(x, y):
 
 
 # Get the card's shape and color
+# Parameters: The game board and the card's coordinates
+# Returns: The card's shape and color
 def getCard(board, card_x, card_y):
     return board[card_x][card_y][0], board[card_x][card_y][1]
 
 
 # Draw the shape on the card
+# Parameters: The card's shape, color and coordinates
+# Returns: Nothing
 def drawCard(shape, color, card_x, card_y):
     # Get sizes of parts of the cards for help with drawing
     half = int(CARD_SIZE * 0.5)
@@ -309,6 +329,8 @@ def drawCard(shape, color, card_x, card_y):
 
 
 # Check if the user has won the game
+# Parameters: List of T/F values for whether each card is flipped (revealed)
+# Returns: True if all cards are revealed, False is any card is not revealed
 def gameWon(revealed):
     for i in revealed:
         if False in i:
@@ -317,6 +339,8 @@ def gameWon(revealed):
 
 
 # Flash colors of the screen when the user wins the game
+# Parameters: The game board and the list of revealed cards
+# Returns: Nothing
 def gameWonAnimation(board, revealed):
     color1 = BG_COLOR
     color2 = DARK_BG_COLOR
